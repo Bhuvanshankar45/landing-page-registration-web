@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="en" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dev Tools Dashboard</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    :root {
+      --bg-primary: #1E2A38;
+      --bg-secondary: #152027;
+      --accent-primary: #2AB7CA;
+      --accent-secondary: #7FDBB6;
+      --text-primary: #E4E4E4;
+      --text-secondary: #B0B0B0;
+      --highlight: #00FFF7;
+    }
+    
+    .app-background {
+      background: linear-gradient(135deg, #1E2A38 0%, #152027 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .app-background::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 70%;
+      height: 150%;
+      background: radial-gradient(circle, rgba(42, 183, 202, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    
+    .app-background::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: none;
+      pointer-events: none;
+    }
+    
+    .tech-symbols {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    
+    .tech-symbol {
+      position: absolute;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+      opacity: 0.04;
+      color: #7FDBB6;
+    }
+    
+    .tech-symbol-1 {
+      top: 5%;
+      left: 10%;
+      font-size: 120px;
+      content: '{ }';
+    }
+    
+    .tech-symbol-2 {
+      top: 15%;
+      right: 15%;
+      font-size: 100px;
+      color: #2AB7CA;
+    }
+    
+    .tech-symbol-3 {
+      bottom: 20%;
+      left: 5%;
+      font-size: 150px;
+      color: #00FFF7;
+    }
+    
+    .tech-symbol-4 {
+      top: 50%;
+      right: 8%;
+      font-size: 80px;
+      color: #7FDBB6;
+    }
+    
+    .tech-symbol-5 {
+      bottom: 10%;
+      right: 25%;
+      font-size: 110px;
+      color: #2AB7CA;
+    }
+    
+    .tech-symbol-6 {
+      top: 30%;
+      left: 3%;
+      font-size: 90px;
+      color: #00FFF7;
+    }
+    
+    .code-lines {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      line-height: 1.8;
+      opacity: 0.04;
+      color: #7FDBB6;
+    }
+    
+    .code-snippet {
+      position: absolute;
+      white-space: nowrap;
+    }
+    
+    .code-snippet-1 {
+      top: 8%;
+      left: 5%;
+      color: #2AB7CA;
+    }
+    
+    .code-snippet-2 {
+      top: 25%;
+      right: 8%;
+      color: #00FFF7;
+    }
+    
+    .code-snippet-3 {
+      top: 45%;
+      left: 3%;
+      color: #7FDBB6;
+    }
+    
+    .code-snippet-4 {
+      top: 65%;
+      right: 5%;
+      color: #2AB7CA;
+    }
+    
+    .code-snippet-5 {
+      bottom: 15%;
+      left: 10%;
+      color: #00FFF7;
+    }
+    
+    .code-snippet-6 {
+      top: 18%;
+      left: 25%;
+      color: #7FDBB6;
+      opacity: 0.03;
+    }
+    
+    .code-snippet-7 {
+      top: 55%;
+      right: 20%;
+      color: #2AB7CA;
+      opacity: 0.03;
+    }
+    
+    .code-snippet-8 {
+      bottom: 25%;
+      right: 35%;
+      color: #00FFF7;
+      opacity: 0.03;
+    }
+    
+    .circuit-lines {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    
+    .circuit-line {
+      position: absolute;
+      background: linear-gradient(90deg, transparent, rgba(42, 183, 202, 0.1), transparent);
+      height: 2px;
+    }
+    
+    .circuit-line-1 {
+      top: 25%;
+      left: 0;
+      right: 40%;
+    }
+    
+    .circuit-line-2 {
+      top: 60%;
+      right: 0;
+      left: 50%;
+    }
+    
+    .circuit-line-3 {
+      top: 80%;
+      left: 20%;
+      right: 20%;
+    }
+    
+    .circuit-dot {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #2AB7CA;
+      border-radius: 50%;
+      opacity: 0.3;
+      box-shadow: 0 0 10px rgba(42, 183, 202, 0.5);
+    }
+    
+    .sidebar {
+      transition: width 0.3s ease, transform 0.3s ease;
+    }
+    
+    .sidebar-collapsed {
+      width: 80px;
+    }
+    
+    .sidebar-item {
+      transition: all 0.2s ease;
+    }
+    
+    .sidebar-item:hover {
+      background: rgba(42, 183, 202, 0.1);
+      transform: translateX(4px);
+    }
+    
+    .sidebar-item.active {
+      background: rgba(42, 183, 202, 0.2);
+      border-left: 3px solid #2AB7CA;
+    }
+    
+    .tool-card {
+      background: rgba(21, 32, 39, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(42, 183, 202, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .tool-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(42, 183, 202, 0.15);
+      border-color: rgba(42, 183, 202, 0.4);
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #2AB7CA 0%, #1E98AA 100%);
+      transition: all 0.2s ease;
+    }
+    
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 16px rgba(42, 183, 202, 0.3);
+    }
+    
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+    
+    .input-field {
+      background: rgba(30, 41, 59, 0.5);
+      border: 1px solid rgba(203, 213, 225, 0.1);
+      transition: all 0.2s ease;
+    }
+    
+    .input-field:focus {
+      outline: none;
+      border-color: #00FFF7;
+      box-shadow: 0 0 0 3px rgba(0, 255, 247, 0.1);
+    }
+    
+    .tooltip {
+      position: relative;
+    }
+    
+    .tooltip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-left: 12px;
+      padding: 6px 12px;
+      background: rgba(30, 42, 56, 0.95);
+      color: #00FFF7;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      border: 1px solid rgba(0, 255, 247, 0.3);
+    }
+    
+    .tooltip:hover::after {
+      opacity: 1;
+    }
+    
+    .syntax-highlight {
+      background: rgba(30, 42, 56, 0.8);
+      border: 1px solid rgba(0, 255, 247, 0.2);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        z-index: 50;
+        transform: translateX(-100%);
+      }
+      
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+      
+      .sidebar-collapsed {
+        width: 250px;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full app-background text-gray-100"><!-- Tech Background Elements -->
+  <div class="tech-symbols">
+   <div class="tech-symbol tech-symbol-1">
+    { }
+   </div>
+   <div class="tech-symbol tech-symbol-2">
+    &lt;/&gt;
+   </div>
+   <div class="tech-symbol tech-symbol-3">
+    [ ]
+   </div>
+   <div class="tech-symbol tech-symbol-4">
+    ( )
+   </div>
+   <div class="tech-symbol tech-symbol-5">
+    =&gt;
+   </div>
+   <div class="tech-symbol tech-symbol-6">
+    !=
+   </div>
+  </div>
+  <div class="code-lines">
+   <div class="code-snippet code-snippet-1">
+    function initialize() { return Promise.resolve(); }
+   </div>
+   <div class="code-snippet code-snippet-2">
+    const data = await fetch('/api/endpoint');
+   </div>
+   <div class="code-snippet code-snippet-3">
+    if (condition) { execute(); } else { fallback(); }
+   </div>
+   <div class="code-snippet code-snippet-4">
+    return array.map(item =&gt; item.value).filter(Boolean);
+   </div>
+   <div class="code-snippet code-snippet-5">
+    class Component extends React.Component { render() {...} }
+   </div>
+   <div class="code-snippet code-snippet-6">
+    import { useState, useEffect } from 'react';
+   </div>
+   <div class="code-snippet code-snippet-7">
+    export default async function handler(req, res) {}
+   </div>
+   <div class="code-snippet code-snippet-8">
+    const result = items.reduce((acc, val) =&gt; acc + val, 0);
+   </div>
+  </div>
+  <div class="circuit-lines">
+   <div class="circuit-line circuit-line-1"></div>
+   <div class="circuit-line circuit-line-2"></div>
+   <div class="circuit-line circuit-line-3"></div>
+   <div class="circuit-dot" style="top: 25%; left: 30%;"></div>
+   <div class="circuit-dot" style="top: 60%; right: 20%;"></div>
+   <div class="circuit-dot" style="top: 80%; left: 40%;"></div>
+   <div class="circuit-dot" style="top: 25%; left: 0%;"></div>
+   <div class="circuit-dot" style="top: 60%; right: 0%;"></div>
+   <div class="circuit-dot" style="top: 80%; right: 20%;"></div>
+  </div><!-- Header -->
+  <header class="fixed top-0 left-0 right-0 h-16 bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-lg border-b border-teal-500/20 z-40 flex items-center px-6"><button id="menuToggle" class="md:hidden mr-4 p-2 hover:bg-blue-500/10 rounded-lg transition-colors">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+    </svg></button>
+   <div class="flex items-center gap-3">
+    <div class="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-300 rounded-lg flex items-center justify-center font-mono font-bold text-sm cursor-pointer hover:scale-110 hover:rotate-12 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-400/50 active:scale-95 text-slate-900" id="logoIcon">
+     &lt;/&gt;
+    </div>
+    <h1 id="appTitle" class="text-xl font-bold font-mono bg-gradient-to-r from-teal-400 to-cyan-300 bg-clip-text text-transparent">DevTools</h1>
+   </div>
+   <div class="flex-1 max-w-xl mx-8 hidden md:block">
+    <div class="relative"><input type="text" placeholder="Quick search tools..." class="w-full input-field rounded-lg px-4 py-2 pl-10 text-sm text-gray-100 placeholder-gray-500">
+     <svg class="w-5 h-5 absolute left-3 top-2.5 text-gray-500" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+     </svg>
+    </div>
+   </div>
+   <div class="flex items-center gap-4"><button class="relative p-2 hover:bg-teal-500/10 rounded-lg transition-colors">
+     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+     </svg><span class="absolute top-1 right-1 w-2 h-2 bg-cyan-300 rounded-full"></span> </button>
+    <div class="relative">
+     <div id="profileAvatar" class="w-9 h-9 bg-gradient-to-br from-teal-400 to-cyan-300 rounded-full flex items-center justify-center font-semibold text-sm cursor-pointer hover:ring-2 ring-cyan-300 transition-all text-slate-900">
+      DV
+     </div>
+     <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-64 bg-slate-900/95 backdrop-blur-lg rounded-xl border border-teal-500/20 shadow-xl overflow-hidden z-50">
+      <div class="p-4 border-b border-teal-500/20 bg-gradient-to-br from-teal-500/10 to-cyan-500/10">
+       <div class="flex items-center gap-3">
+        <div class="w-12 h-12 bg-gradient-to-br from-teal-400 to-cyan-300 rounded-full flex items-center justify-center font-bold text-lg text-slate-900">
+         DV
+        </div>
+        <div>
+         <h3 class="font-semibold text-sm">Developer User</h3>
+         <p class="text-xs text-gray-400">dev@example.com</p>
+        </div>
+       </div>
+      </div>
+      <div class="p-2"><a href="#profile" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-teal-500/10 transition-colors cursor-pointer group" id="viewProfileBtn">
+        <svg class="w-5 h-5 text-cyan-300" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+        </svg><span class="text-sm group-hover:text-cyan-300">View Profile</span> </a> <a href="#account" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-teal-500/10 transition-colors cursor-pointer group">
+        <svg class="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+        </svg><span class="text-sm group-hover:text-cyan-300">Account Settings</span> </a> <a href="#preferences" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-teal-500/10 transition-colors cursor-pointer group">
+        <svg class="w-5 h-5 text-green-300" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+        </svg><span class="text-sm group-hover:text-cyan-300">Preferences</span> </a>
+      </div>
+      <div class="p-2 border-t border-blue-500/20"><a href="#logout" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-500/10 transition-colors cursor-pointer group">
+        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+        </svg><span class="text-sm group-hover:text-red-300">Sign Out</span> </a>
+      </div>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="flex h-full pt-16"><!-- Sidebar -->
+   <aside id="sidebar" class="sidebar w-64 bg-slate-900/50 backdrop-blur-lg border-r border-blue-500/20 flex flex-col">
+    <div class="p-4 border-b border-blue-500/20"><button id="sidebarToggle" class="w-full flex items-center justify-between p-2 hover:bg-blue-500/10 rounded-lg transition-colors"> <span class="sidebar-label text-sm font-medium text-gray-400">TOOLS</span>
+      <svg class="w-5 h-5 text-gray-400 transition-transform" id="toggleIcon" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+      </svg></button>
+    </div>
+    <nav class="flex-1 p-3 overflow-y-auto">
+     <div class="space-y-1"><a href="#snippets" class="sidebar-item active flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer group" data-tool="snippets">
+       <svg class="w-5 h-5 text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+       </svg><span class="sidebar-label text-sm font-medium">Code Snippets</span> </a> <a href="#api" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer group tooltip" data-tool="api" data-tooltip="Test APIs">
+       <svg class="w-5 h-5 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+       </svg><span class="sidebar-label text-sm font-medium">API Tester</span> </a> <a href="#json" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer group tooltip" data-tool="json" data-tooltip="Format JSON">
+       <svg class="w-5 h-5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+       </svg><span class="sidebar-label text-sm font-medium">JSON Formatter</span> </a> <a href="#regex" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer group tooltip" data-tool="regex" data-tooltip="Test Regex">
+       <svg class="w-5 h-5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+       </svg><span class="sidebar-label text-sm font-medium">Regex Tester</span> </a>
+     </div>
+     <div class="mt-8 pt-4 border-t border-blue-500/20"><a href="#settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg cursor-pointer group tooltip" data-tool="settings" data-tooltip="Settings">
+       <svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+       </svg><span class="sidebar-label text-sm font-medium">Settings</span> </a>
+     </div>
+    </nav>
+   </aside><!-- Main Content -->
+   <main class="flex-1 overflow-auto">
+    <div class="p-8"><!-- Welcome Screen -->
+     <div id="welcomeScreen" class="max-w-4xl mx-auto">
+      <div class="text-center mb-12">
+       <h2 id="welcomeHeading" class="text-4xl font-bold mb-4 font-mono bg-gradient-to-r from-blue-400 via-cyan-300 to-purple-400 bg-clip-text text-transparent">Welcome back, Developer</h2>
+       <p id="welcomeSubtext" class="text-gray-400 text-lg">Select a tool from the sidebar to get started</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+       <div class="tool-card rounded-xl p-6 cursor-pointer" data-tool-card="snippets">
+        <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
+         <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+         </svg>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Code Snippets</h3>
+        <p class="text-gray-400 text-sm">Store and organize your frequently used code snippets</p>
+       </div>
+       <div class="tool-card rounded-xl p-6 cursor-pointer" data-tool-card="api">
+        <div class="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mb-4">
+         <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+         </svg>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">API Tester</h3>
+        <p class="text-gray-400 text-sm">Test REST APIs with custom headers and parameters</p>
+       </div>
+       <div class="tool-card rounded-xl p-6 cursor-pointer" data-tool-card="json">
+        <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
+         <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+         </svg>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">JSON Formatter</h3>
+        <p class="text-gray-400 text-sm">Format, validate, and beautify JSON data</p>
+       </div>
+       <div class="tool-card rounded-xl p-6 cursor-pointer" data-tool-card="regex">
+        <div class="w-12 h-12 bg-green-500/20 rounded-lg flex items-center justify-center mb-4">
+         <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+         </svg>
+        </div>
+        <h3 class="text-xl font-semibold mb-2">Regex Tester</h3>
+        <p class="text-gray-400 text-sm">Test and debug regular expressions in real-time</p>
+       </div>
+      </div>
+      <div class="mt-12 p-6 bg-gradient-to-r from-blue-500/10 to-cyan-500/10 rounded-xl border border-blue-500/20">
+       <div class="flex items-start gap-4">
+        <div class="w-10 h-10 bg-cyan-400/20 rounded-lg flex items-center justify-center flex-shrink-0">
+         <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+         </svg>
+        </div>
+        <div>
+         <h4 class="font-semibold mb-1 text-cyan-300">Pro Tip</h4>
+         <p class="text-sm text-gray-400">Use Ctrl+K (Cmd+K on Mac) to quickly search and access any tool</p>
+        </div>
+       </div>
+      </div>
+     </div><!-- Tool Content Areas (hidden by default) -->
+     <div id="snippetsContent" class="hidden max-w-6xl mx-auto">
+      <div class="mb-6">
+       <h2 class="text-3xl font-bold mb-2 font-mono">Code Snippets</h2>
+       <p class="text-gray-400">Manage your frequently used code snippets</p>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+       <div class="lg:col-span-1">
+        <div class="tool-card rounded-xl p-4">
+         <h3 class="font-semibold mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+          </svg> Snippet Library</h3>
+         <div class="space-y-2">
+          <div class="p-3 bg-slate-800/50 rounded-lg cursor-pointer hover:bg-slate-700/50 transition-colors border border-blue-500/10">
+           <div class="flex items-center justify-between mb-1"><span class="text-sm font-medium">React Component</span> <span class="text-xs text-gray-500">JS</span>
+           </div>
+           <p class="text-xs text-gray-500">Basic functional component</p>
+          </div>
+          <div class="p-3 bg-slate-800/50 rounded-lg cursor-pointer hover:bg-slate-700/50 transition-colors border border-cyan-500/10">
+           <div class="flex items-center justify-between mb-1"><span class="text-sm font-medium">Array Methods</span> <span class="text-xs text-gray-500">JS</span>
+           </div>
+           <p class="text-xs text-gray-500">Common array operations</p>
+          </div>
+          <div class="p-3 bg-slate-800/50 rounded-lg cursor-pointer hover:bg-slate-700/50 transition-colors border border-purple-500/10">
+           <div class="flex items-center justify-between mb-1"><span class="text-sm font-medium">Flexbox Layout</span> <span class="text-xs text-gray-500">CSS</span>
+           </div>
+           <p class="text-xs text-gray-500">Centered flex container</p>
+          </div>
+         </div><button class="btn-primary w-full mt-4 py-2 px-4 rounded-lg text-sm font-medium"> + New Snippet </button>
+        </div>
+       </div>
+       <div class="lg:col-span-2">
+        <div class="tool-card rounded-xl p-6">
+         <div class="mb-4"><label class="block text-sm font-medium mb-2">Snippet Name</label> <input type="text" placeholder="My Awesome Snippet" class="w-full input-field rounded-lg px-4 py-2 text-sm">
+         </div>
+         <div class="mb-4"><label class="block text-sm font-medium mb-2">Language</label> <select class="w-full input-field rounded-lg px-4 py-2 text-sm"> <option>JavaScript</option> <option>TypeScript</option> <option>Python</option> <option>CSS</option> <option>HTML</option> </select>
+         </div>
+         <div><label class="block text-sm font-medium mb-2">Code</label> <textarea class="w-full input-field syntax-highlight rounded-lg px-4 py-3 text-sm font-mono" rows="12" placeholder="// Your code here..."></textarea>
+         </div>
+         <div class="flex gap-3 mt-4"><button class="btn-primary flex-1 py-2 px-4 rounded-lg text-sm font-medium"> Save Snippet </button> <button class="py-2 px-4 rounded-lg text-sm font-medium bg-slate-700/50 hover:bg-slate-600/50 transition-colors"> Copy to Clipboard </button>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div id="apiContent" class="hidden max-w-6xl mx-auto">
+      <div class="mb-6">
+       <h2 class="text-3xl font-bold mb-2 font-mono">API Tester</h2>
+       <p class="text-gray-400">Test and debug REST API endpoints</p>
+      </div>
+      <div class="tool-card rounded-xl p-6">
+       <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6"><select class="input-field rounded-lg px-4 py-2 text-sm font-medium"> <option>GET</option> <option>POST</option> <option>PUT</option> <option>DELETE</option> <option>PATCH</option> </select> <input type="text" placeholder="https://api.example.com/endpoint" class="md:col-span-2 input-field rounded-lg px-4 py-2 text-sm"> <button class="btn-primary py-2 px-4 rounded-lg text-sm font-medium"> Send Request </button>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+         <h3 class="text-sm font-semibold mb-3 text-cyan-300">Headers</h3>
+         <div class="space-y-2">
+          <div class="flex gap-2"><input type="text" placeholder="Key" class="flex-1 input-field rounded-lg px-3 py-2 text-sm"> <input type="text" placeholder="Value" class="flex-1 input-field rounded-lg px-3 py-2 text-sm">
+          </div><button class="text-sm text-cyan-400 hover:text-cyan-300">+ Add Header</button>
+         </div>
+        </div>
+        <div>
+         <h3 class="text-sm font-semibold mb-3 text-cyan-300">Query Params</h3>
+         <div class="space-y-2">
+          <div class="flex gap-2"><input type="text" placeholder="Key" class="flex-1 input-field rounded-lg px-3 py-2 text-sm"> <input type="text" placeholder="Value" class="flex-1 input-field rounded-lg px-3 py-2 text-sm">
+          </div><button class="text-sm text-cyan-400 hover:text-cyan-300">+ Add Param</button>
+         </div>
+        </div>
+       </div>
+       <div class="mb-6">
+        <h3 class="text-sm font-semibold mb-3 text-cyan-300">Request Body</h3><textarea class="w-full input-field syntax-highlight rounded-lg px-4 py-3 text-sm font-mono" rows="6" placeholder="{\n  &quot;key&quot;: &quot;value&quot;\n}"></textarea>
+       </div>
+       <div>
+        <h3 class="text-sm font-semibold mb-3 text-cyan-300">Response</h3>
+        <div class="syntax-highlight rounded-lg p-4 min-h-[200px]">
+         <p class="text-sm text-gray-500 text-center py-8">Send a request to see the response</p>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div id="jsonContent" class="hidden max-w-6xl mx-auto">
+      <div class="mb-6">
+       <h2 class="text-3xl font-bold mb-2 font-mono">JSON Formatter</h2>
+       <p class="text-gray-400">Format, validate, and beautify JSON data</p>
+      </div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+       <div class="tool-card rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+         <h3 class="font-semibold">Input</h3><button class="text-sm text-cyan-400 hover:text-cyan-300">Clear</button>
+        </div><textarea class="w-full input-field syntax-highlight rounded-lg px-4 py-3 text-sm font-mono" rows="20" placeholder="Paste your JSON here..."></textarea>
+        <div class="flex gap-3 mt-4"><button class="btn-primary flex-1 py-2 px-4 rounded-lg text-sm font-medium"> Format JSON </button> <button class="py-2 px-4 rounded-lg text-sm font-medium bg-slate-700/50 hover:bg-slate-600/50 transition-colors"> Minify </button>
+        </div>
+       </div>
+       <div class="tool-card rounded-xl p-6">
+        <div class="flex items-center justify-between mb-4">
+         <h3 class="font-semibold">Output</h3><button class="text-sm text-cyan-400 hover:text-cyan-300">Copy</button>
+        </div>
+        <div class="syntax-highlight rounded-lg p-4 h-[calc(20*1.5rem)] overflow-auto">
+         <pre class="text-sm font-mono"><code class="text-gray-400">// Formatted JSON will appear here</code></pre>
+        </div>
+        <div class="mt-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+         <p class="text-sm text-green-400">✓ Valid JSON</p>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div id="regexContent" class="hidden max-w-6xl mx-auto">
+      <div class="mb-6">
+       <h2 class="text-3xl font-bold mb-2 font-mono">Regex Tester</h2>
+       <p class="text-gray-400">Test and debug regular expressions</p>
+      </div>
+      <div class="tool-card rounded-xl p-6 mb-6">
+       <div class="mb-4"><label class="block text-sm font-medium mb-2">Regular Expression</label>
+        <div class="flex gap-2"><span class="input-field rounded-l-lg px-4 py-2 text-sm font-mono bg-slate-800/80">/</span> <input type="text" placeholder="[A-Za-z0-9]+" class="flex-1 input-field px-4 py-2 text-sm font-mono"> <span class="input-field rounded-r-lg px-4 py-2 text-sm font-mono bg-slate-800/80">/g</span>
+        </div>
+       </div>
+       <div class="grid grid-cols-4 gap-2 mb-4"><label class="flex items-center gap-2 text-sm cursor-pointer hover:text-cyan-300"> <input type="checkbox" class="w-4 h-4 rounded accent-cyan-400"> Global (g) </label> <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-cyan-300"> <input type="checkbox" class="w-4 h-4 rounded accent-cyan-400"> Multiline (m) </label> <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-cyan-300"> <input type="checkbox" class="w-4 h-4 rounded accent-cyan-400"> Case Insensitive (i) </label> <label class="flex items-center gap-2 text-sm cursor-pointer hover:text-cyan-300"> <input type="checkbox" class="w-4 h-4 rounded accent-cyan-400"> Unicode (u) </label>
+       </div>
+       <div class="mb-4"><label class="block text-sm font-medium mb-2">Test String</label> <textarea class="w-full input-field rounded-lg px-4 py-3 text-sm" rows="6" placeholder="Enter text to test against your regex..."></textarea>
+       </div><button class="btn-primary w-full py-2 px-4 rounded-lg text-sm font-medium mb-4"> Test Regex </button>
+       <div class="syntax-highlight rounded-lg p-4">
+        <h4 class="text-sm font-semibold mb-2 text-cyan-300">Matches</h4>
+        <p class="text-sm text-gray-500">Run the test to see matches</p>
+       </div>
+      </div>
+     </div>
+     <div id="profileContent" class="hidden max-w-4xl mx-auto">
+      <div class="mb-6">
+       <h2 class="text-3xl font-bold mb-2 font-mono">Profile</h2>
+       <p class="text-gray-400">Manage your account information</p>
+      </div>
+      <div class="space-y-6">
+       <div class="tool-card rounded-xl p-6">
+        <div class="flex items-start gap-6 mb-6">
+         <div class="relative">
+          <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center font-bold text-3xl">
+           DV
+          </div><button class="absolute bottom-0 right-0 w-8 h-8 bg-cyan-400 rounded-full flex items-center justify-center hover:bg-cyan-300 transition-colors">
+           <svg class="w-4 h-4 text-slate-900" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+           </svg></button>
+         </div>
+         <div class="flex-1">
+          <h3 class="text-2xl font-bold mb-1">Developer User</h3>
+          <p class="text-gray-400 mb-3">Full Stack Developer</p>
+          <div class="flex gap-2"><span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-medium">Pro Member</span> <span class="px-3 py-1 bg-cyan-500/20 text-cyan-400 rounded-full text-xs font-medium">250 Projects</span>
+          </div>
+         </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+         <div><label class="block text-sm font-medium mb-2">Full Name</label> <input type="text" value="Developer User" class="w-full input-field rounded-lg px-4 py-2 text-sm">
+         </div>
+         <div><label class="block text-sm font-medium mb-2">Username</label> <input type="text" value="devuser" class="w-full input-field rounded-lg px-4 py-2 text-sm">
+         </div>
+         <div><label class="block text-sm font-medium mb-2">Email</label> <input type="email" value="dev@example.com" class="w-full input-field rounded-lg px-4 py-2 text-sm">
+         </div>
+         <div><label class="block text-sm font-medium mb-2">Role</label> <input type="text" value="Full Stack Developer" class="w-full input-field rounded-lg px-4 py-2 text-sm">
+         </div>
+        </div>
+        <div class="mt-4"><label class="block text-sm font-medium mb-2">Bio</label> <textarea class="w-full input-field rounded-lg px-4 py-3 text-sm" rows="3" placeholder="Tell us about yourself...">Passionate developer building amazing tools and experiences.</textarea>
+        </div>
+        <div class="flex gap-3 mt-6"><button class="btn-primary px-6 py-2 rounded-lg text-sm font-medium"> Save Changes </button> <button class="px-6 py-2 rounded-lg text-sm font-medium bg-slate-700/50 hover:bg-slate-600/50 transition-colors"> Cancel </button>
+        </div>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="tool-card rounded-xl p-6 text-center">
+         <div class="w-12 h-12 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+          </svg>
+         </div>
+         <h4 class="text-2xl font-bold mb-1">250</h4>
+         <p class="text-sm text-gray-400">Total Projects</p>
+        </div>
+        <div class="tool-card rounded-xl p-6 text-center">
+         <div class="w-12 h-12 bg-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+         </div>
+         <h4 class="text-2xl font-bold mb-1">1,240</h4>
+         <p class="text-sm text-gray-400">API Calls Today</p>
+        </div>
+        <div class="tool-card rounded-xl p-6 text-center">
+         <div class="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+         </div>
+         <h4 class="text-2xl font-bold mb-1">48h</h4>
+         <p class="text-sm text-gray-400">This Week</p>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div id="settingsContent" class="hidden max-w-4xl mx-auto">
+      <div class="mb-6">
+       <h2 class="text-3xl font-bold mb-2 font-mono">Settings</h2>
+       <p class="text-gray-400">Customize your dashboard preferences</p>
+      </div>
+      <div class="space-y-6">
+       <div class="tool-card rounded-xl p-6">
+        <h3 class="font-semibold mb-4">Appearance</h3>
+        <div class="space-y-4"><label class="flex items-center justify-between cursor-pointer"> <span class="text-sm">Dark Mode</span>
+          <div class="relative"><input type="checkbox" checked class="sr-only peer">
+           <div class="w-11 h-6 bg-slate-700 rounded-full peer-checked:bg-blue-500 transition-colors"></div>
+           <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+          </div></label> <label class="flex items-center justify-between cursor-pointer"> <span class="text-sm">Compact Mode</span>
+          <div class="relative"><input type="checkbox" class="sr-only peer">
+           <div class="w-11 h-6 bg-slate-700 rounded-full peer-checked:bg-blue-500 transition-colors"></div>
+           <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+          </div></label>
+        </div>
+       </div>
+       <div class="tool-card rounded-xl p-6">
+        <h3 class="font-semibold mb-4">Editor</h3>
+        <div class="space-y-4">
+         <div><label class="block text-sm mb-2">Default Language</label> <select class="w-full input-field rounded-lg px-4 py-2 text-sm"> <option>JavaScript</option> <option>TypeScript</option> <option>Python</option> </select>
+         </div>
+         <div><label class="block text-sm mb-2">Tab Size</label> <input type="number" value="2" class="w-full input-field rounded-lg px-4 py-2 text-sm">
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </div>
+   </main>
+  </div><!-- Footer -->
+  <footer class="fixed bottom-0 left-0 right-0 h-10 bg-slate-900/50 backdrop-blur-lg border-t border-blue-500/20 flex items-center justify-between px-6 text-xs text-gray-500"><span>DevTools Dashboard v1.0.0</span> <span>💡 Tip: Keyboard shortcuts available in Settings</span>
+  </footer>
+  <script>
+    const defaultConfig = {
+      background_color: '#0A1F2C',
+      surface_color: '#1E293B',
+      text_color: '#FFFFFF',
+      primary_action_color: '#3B82F6',
+      secondary_action_color: '#22D3EE',
+      font_family: 'Inter',
+      font_size: 16,
+      app_title: 'DevTools',
+      welcome_heading: 'Welcome back, Developer',
+      welcome_subtext: 'Select a tool from the sidebar to get started'
+    };
+
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const menuToggle = document.getElementById('menuToggle');
+    const toggleIcon = document.getElementById('toggleIcon');
+    const welcomeScreen = document.getElementById('welcomeScreen');
+    const sidebarItems = document.querySelectorAll('.sidebar-item');
+    const toolCards = document.querySelectorAll('[data-tool-card]');
+    
+    const contentSections = {
+      snippets: document.getElementById('snippetsContent'),
+      api: document.getElementById('apiContent'),
+      json: document.getElementById('jsonContent'),
+      regex: document.getElementById('regexContent'),
+      profile: document.getElementById('profileContent'),
+      settings: document.getElementById('settingsContent')
+    };
+
+    let sidebarCollapsed = false;
+    const profileAvatar = document.getElementById('profileAvatar');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const viewProfileBtn = document.getElementById('viewProfileBtn');
+    const logoIcon = document.getElementById('logoIcon');
+
+    sidebarToggle.addEventListener('click', () => {
+      sidebarCollapsed = !sidebarCollapsed;
+      sidebar.classList.toggle('sidebar-collapsed');
+      toggleIcon.style.transform = sidebarCollapsed ? 'rotate(180deg)' : 'rotate(0)';
+    });
+
+    profileAvatar.addEventListener('click', (e) => {
+      e.stopPropagation();
+      profileDropdown.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!profileAvatar.contains(e.target) && !profileDropdown.contains(e.target)) {
+        profileDropdown.classList.add('hidden');
+      }
+    });
+
+    viewProfileBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      profileDropdown.classList.add('hidden');
+      showTool('profile');
+    });
+
+    logoIcon.addEventListener('click', () => {
+      welcomeScreen.classList.remove('hidden');
+      Object.values(contentSections).forEach(section => section.classList.add('hidden'));
+      sidebarItems.forEach(item => item.classList.remove('active'));
+    });
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('mobile-open');
+    });
+
+    function showTool(toolName) {
+      welcomeScreen.classList.add('hidden');
+      Object.values(contentSections).forEach(section => section.classList.add('hidden'));
+      
+      if (contentSections[toolName]) {
+        contentSections[toolName].classList.remove('hidden');
+      }
+      
+      sidebarItems.forEach(item => {
+        item.classList.remove('active');
+        if (item.dataset.tool === toolName) {
+          item.classList.add('active');
+        }
+      });
+      
+      if (window.innerWidth < 768) {
+        sidebar.classList.remove('mobile-open');
+      }
+    }
+
+    sidebarItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        const tool = item.dataset.tool;
+        showTool(tool);
+      });
+    });
+
+    toolCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const tool = card.dataset.toolCard;
+        showTool(tool);
+      });
+    });
+
+    async function onConfigChange(config) {
+      const baseSize = config.font_size || defaultConfig.font_size;
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseFontStack = 'sans-serif';
+      
+      document.body.style.fontFamily = `${customFont}, ${baseFontStack}`;
+      document.body.style.fontSize = `${baseSize}px`;
+      
+      const backgroundColor = config.background_color || defaultConfig.background_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const primaryActionColor = config.primary_action_color || defaultConfig.primary_action_color;
+      const secondaryActionColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+      
+      document.documentElement.style.setProperty('--bg-primary', backgroundColor);
+      document.documentElement.style.setProperty('--bg-secondary', surfaceColor);
+      document.documentElement.style.setProperty('--text-primary', textColor);
+      document.documentElement.style.setProperty('--accent-primary', primaryActionColor);
+      document.documentElement.style.setProperty('--accent-secondary', secondaryActionColor);
+      
+      const appBackground = document.querySelector('.app-background');
+      if (appBackground) {
+        appBackground.style.background = `linear-gradient(135deg, ${backgroundColor} 0%, ${surfaceColor} 100%)`;
+      }
+      
+      document.querySelectorAll('.tool-card').forEach(card => {
+        card.style.background = `rgba(30, 41, 59, 0.6)`;
+        card.style.borderColor = `${primaryActionColor}33`;
+      });
+      
+      document.querySelectorAll('.btn-primary').forEach(btn => {
+        btn.style.background = `linear-gradient(135deg, ${primaryActionColor} 0%, ${primaryActionColor}DD 100%)`;
+      });
+      
+      document.querySelectorAll('.sidebar-item.active').forEach(item => {
+        item.style.borderLeftColor = primaryActionColor;
+      });
+      
+      const appTitle = document.getElementById('appTitle');
+      if (appTitle) {
+        appTitle.textContent = config.app_title || defaultConfig.app_title;
+      }
+      
+      const welcomeHeading = document.getElementById('welcomeHeading');
+      if (welcomeHeading) {
+        welcomeHeading.textContent = config.welcome_heading || defaultConfig.welcome_heading;
+      }
+      
+      const welcomeSubtext = document.getElementById('welcomeSubtext');
+      if (welcomeSubtext) {
+        welcomeSubtext.textContent = config.welcome_subtext || defaultConfig.welcome_subtext;
+      }
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => {
+                config.background_color = value;
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            },
+            {
+              get: () => config.surface_color || defaultConfig.surface_color,
+              set: (value) => {
+                config.surface_color = value;
+                window.elementSdk.setConfig({ surface_color: value });
+              }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => {
+                config.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => config.primary_action_color || defaultConfig.primary_action_color,
+              set: (value) => {
+                config.primary_action_color = value;
+                window.elementSdk.setConfig({ primary_action_color: value });
+              }
+            },
+            {
+              get: () => config.secondary_action_color || defaultConfig.secondary_action_color,
+              set: (value) => {
+                config.secondary_action_color = value;
+                window.elementSdk.setConfig({ secondary_action_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => {
+              config.font_family = value;
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => {
+              config.font_size = value;
+              window.elementSdk.setConfig({ font_size: value });
+            }
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['app_title', config.app_title || defaultConfig.app_title],
+          ['welcome_heading', config.welcome_heading || defaultConfig.welcome_heading],
+          ['welcome_subtext', config.welcome_subtext || defaultConfig.welcome_subtext]
+        ])
+      });
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9c83c1e373337f74',t:'MTc3MDE0MDg4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

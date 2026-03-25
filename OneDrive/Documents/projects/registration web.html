@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile Registration</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #14171f;
+    --surface2: #1c2030;
+    --border: #2a2f40;
+    --border-focus: #6c63ff;
+    --accent: #6c63ff;
+    --accent2: #ff6b9d;
+    --text: #e8eaf0;
+    --text-muted: #7a7f96;
+    --text-label: #b0b5cc;
+    --error: #ff5577;
+    --success: #3ddc97;
+    --warning: #ffb547;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+    padding: 40px 20px 80px;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 10% -10%, rgba(108,99,255,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 100%, rgba(255,107,157,0.08) 0%, transparent 60%);
+  }
+
+  .form-wrapper {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .form-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .form-header .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .form-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #e8eaf0 30%, #6c63ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  .form-header p {
+    color: var(--text-muted);
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  /* Section */
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .section:focus-within::before { opacity: 1; }
+  .section:focus-within { border-color: rgba(108,99,255,0.3); }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+  }
+
+  .section-title .icon {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(255,107,157,0.2));
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+  }
+
+  /* Grid */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  @media(max-width: 600px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+
+  /* Field */
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-label);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  label .req { color: var(--accent2); }
+
+  /* Inputs */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="date"],
+  input[type="url"],
+  input[type="number"],
+  textarea,
+  select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--border-focus);
+    background: #1e2235;
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
+  }
+
+  input.valid, textarea.valid, select.valid {
+    border-color: var(--success);
+  }
+
+  input.invalid, textarea.invalid, select.invalid {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(255,85,119,0.1);
+  }
+
+  textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+
+  select option {
+    background: #1c2030;
+    color: var(--text);
+  }
+
+  /* Validation message */
+  .hint {
+    font-size: 11px;
+    min-height: 16px;
+    color: transparent;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .hint.error { color: var(--error); }
+  .hint.success { color: var(--success); }
+
+  /* Password strength */
+  .strength-bar {
+    display: flex; gap: 4px; margin-top: 2px;
+  }
+  .strength-bar span {
+    flex: 1; height: 3px; border-radius: 10px;
+    background: var(--border);
+    transition: background 0.3s;
+  }
+
+  /* Photo Upload */
+  .photo-upload {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .avatar-preview {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    border: 2px dashed var(--border);
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    overflow: hidden;
+    position: relative;
+    transition: border-color 0.2s;
+    flex-shrink: 0;
+  }
+
+  .avatar-preview img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    position: absolute; inset: 0;
+  }
+
+  .photo-controls { display: flex; flex-direction: column; gap: 8px; }
+
+  .upload-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 16px;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .upload-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(108,99,255,0.08);
+  }
+
+  .photo-hint { font-size: 11px; color: var(--text-muted); }
+
+  /* Radio & Checkbox */
+  .radio-group, .checkbox-group {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-top: 4px;
+  }
+
+  .radio-option, .checkbox-option {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 16px;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .radio-option:hover, .checkbox-option:hover {
+    border-color: var(--accent);
+    background: rgba(108,99,255,0.08);
+  }
+
+  .radio-option input, .checkbox-option input {
+    width: auto;
+    accent-color: var(--accent);
+    width: 15px; height: 15px;
+    cursor: pointer;
+  }
+
+  .radio-option.selected, .checkbox-option.checked {
+    border-color: var(--accent);
+    background: rgba(108,99,255,0.12);
+    color: var(--accent);
+  }
+
+  /* Multi-select */
+  .multiselect-wrapper {
+    position: relative;
+  }
+
+  .multiselect-box {
+    min-height: 46px;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 36px 8px 10px;
+    cursor: pointer;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 5px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .multiselect-box:focus { outline: none; }
+  .multiselect-box.open, .multiselect-box:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
+  }
+
+  .multiselect-box.valid { border-color: var(--success); }
+  .multiselect-box.invalid { border-color: var(--error); }
+
+  .multiselect-arrow {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--text-muted); font-size: 11px;
+    pointer-events: none;
+    transition: transform 0.2s;
+  }
+
+  .multiselect-arrow.open { transform: translateY(-50%) rotate(180deg); }
+
+  .tag {
+    background: rgba(108,99,255,0.2);
+    border: 1px solid rgba(108,99,255,0.4);
+    color: #a89fff;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  .tag-remove { cursor: pointer; color: var(--accent); font-size: 13px; line-height: 1; }
+
+  .multiselect-placeholder { color: var(--text-muted); font-size: 14px; }
+
+  .multiselect-dropdown {
+    position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+    background: #1e2235;
+    border: 1.5px solid var(--border-focus);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    z-index: 100;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+  }
+
+  .multiselect-dropdown.open { display: block; }
+
+  .multiselect-option {
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px;
+    transition: background 0.15s;
+  }
+
+  .multiselect-option:hover { background: rgba(108,99,255,0.1); }
+
+  .multiselect-option.selected {
+    background: rgba(108,99,255,0.15);
+    color: var(--accent);
+  }
+
+  .multiselect-option .check {
+    width: 15px; height: 15px;
+    border-radius: 3px;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+
+  .multiselect-option.selected .check {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* Buttons */
+  .btn-row {
+    display: flex; gap: 14px; justify-content: flex-end; margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 14px 32px;
+    border-radius: var(--radius-sm);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-reset {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .btn-reset:hover {
+    border-color: var(--error);
+    color: var(--error);
+    background: rgba(255,85,119,0.06);
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, var(--accent), #9f6fff);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(108,99,255,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-submit::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #9f6fff, var(--accent2));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(108,99,255,0.55); }
+  .btn-submit:hover::before { opacity: 1; }
+  .btn-submit span { position: relative; z-index: 1; }
+
+  /* Success toast */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--success);
+    color: #0d0f14;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 8px 32px rgba(61,220,151,0.4);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+</style>
+</head>
+<body>
+
+<div class="form-wrapper">
+  <div class="form-header">
+    <div class="eyebrow">Create Account</div>
+    <h1>Build Your Profile</h1>
+    <p>Fill in your details to get started. Fields marked <span style="color:var(--accent2)">*</span> are required.</p>
+  </div>
+
+  <form id="profileForm" novalidate>
+
+    <!-- Personal Info -->
+    <div class="section">
+      <div class="section-title"><span class="icon">👤</span> Personal Information</div>
+
+      <!-- Photo -->
+      <div class="field" style="margin-bottom:24px">
+        <label>Profile Photo</label>
+        <div class="photo-upload">
+          <div class="avatar-preview" id="avatarPreview">🧑</div>
+          <div class="photo-controls">
+            <label class="upload-btn" for="photoInput">
+              📷 Choose Photo
+            </label>
+            <input type="file" id="photoInput" accept="image/*" style="display:none">
+            <div class="photo-hint">JPG, PNG or GIF · Max 5MB</div>
+            <div class="hint" id="photoHint"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="fullName">Full Name <span class="req">*</span></label>
+          <input type="text" id="fullName" placeholder="John Doe" autocomplete="name">
+          <div class="hint" id="fullNameHint"></div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email Address <span class="req">*</span></label>
+          <input type="email" id="email" placeholder="john@example.com" autocomplete="email">
+          <div class="hint" id="emailHint"></div>
+        </div>
+
+        <div class="field">
+          <label for="password">Password <span class="req">*</span></label>
+          <input type="password" id="password" placeholder="Min 8 characters">
+          <div class="strength-bar" id="strengthBar">
+            <span id="s1"></span><span id="s2"></span><span id="s3"></span><span id="s4"></span>
+          </div>
+          <div class="hint" id="passwordHint"></div>
+        </div>
+
+        <div class="field">
+          <label for="phone">Phone Number <span class="req">*</span></label>
+          <input type="tel" id="phone" placeholder="+91 98765 43210" autocomplete="tel">
+          <div class="hint" id="phoneHint"></div>
+        </div>
+
+        <div class="field">
+          <label for="dob">Date of Birth <span class="req">*</span></label>
+          <input type="date" id="dob">
+          <div class="hint" id="dobHint"></div>
+        </div>
+
+        <div class="field">
+          <label>Gender <span class="req">*</span></label>
+          <div class="radio-group" id="genderGroup">
+            <label class="radio-option" for="genderM">
+              <input type="radio" id="genderM" name="gender" value="Male"> Male
+            </label>
+            <label class="radio-option" for="genderF">
+              <input type="radio" id="genderF" name="gender" value="Female"> Female
+            </label>
+            <label class="radio-option" for="genderO">
+              <input type="radio" id="genderO" name="gender" value="Other"> Other
+            </label>
+          </div>
+          <div class="hint" id="genderHint"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Address -->
+    <div class="section">
+      <div class="section-title"><span class="icon">📍</span> Address Details</div>
+
+      <div class="field" style="margin-bottom:20px">
+        <label for="address">Address <span class="req">*</span></label>
+        <textarea id="address" placeholder="Street / Flat / Building number"></textarea>
+        <div class="hint" id="addressHint"></div>
+      </div>
+
+      <div class="grid-3">
+        <div class="field">
+          <label for="city">City <span class="req">*</span></label>
+          <input type="text" id="city" placeholder="Mumbai">
+          <div class="hint" id="cityHint"></div>
+        </div>
+
+        <div class="field">
+          <label for="state">State <span class="req">*</span></label>
+          <input type="text" id="state" placeholder="Maharashtra">
+          <div class="hint" id="stateHint"></div>
+        </div>
+
+        <div class="field">
+          <label for="pincode">Pincode <span class="req">*</span></label>
+          <input type="number" id="pincode" placeholder="400001">
+          <div class="hint" id="pincodeHint"></div>
+        </div>
+
+        <div class="field full">
+          <label for="country">Country <span class="req">*</span></label>
+          <select id="country">
+            <option value="">— Select Country —</option>
+            <option>India</option><option>United States</option><option>United Kingdom</option>
+            <option>Canada</option><option>Australia</option><option>Germany</option>
+            <option>France</option><option>Japan</option><option>Singapore</option>
+            <option>UAE</option><option>Other</option>
+          </select>
+          <div class="hint" id="countryHint"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Interests -->
+    <div class="section">
+      <div class="section-title"><span class="icon">🎯</span> Interests & Skills</div>
+
+      <div class="field" style="margin-bottom:20px">
+        <label>Hobbies <span class="req">*</span> <span style="font-size:10px;color:var(--text-muted);text-transform:none;letter-spacing:0">(select at least 2)</span></label>
+        <div class="checkbox-group" id="hobbiesGroup">
+          <label class="checkbox-option" for="h1"><input type="checkbox" id="h1" value="Reading"> 📚 Reading</label>
+          <label class="checkbox-option" for="h2"><input type="checkbox" id="h2" value="Gaming"> 🎮 Gaming</label>
+          <label class="checkbox-option" for="h3"><input type="checkbox" id="h3" value="Travelling"> ✈️ Travelling</label>
+          <label class="checkbox-option" for="h4"><input type="checkbox" id="h4" value="Photography"> 📷 Photography</label>
+          <label class="checkbox-option" for="h5"><input type="checkbox" id="h5" value="Cooking"> 🍳 Cooking</label>
+          <label class="checkbox-option" for="h6"><input type="checkbox" id="h6" value="Music"> 🎵 Music</label>
+          <label class="checkbox-option" for="h7"><input type="checkbox" id="h7" value="Fitness"> 💪 Fitness</label>
+          <label class="checkbox-option" for="h8"><input type="checkbox" id="h8" value="Art"> 🎨 Art</label>
+        </div>
+        <div class="hint" id="hobbiesHint"></div>
+      </div>
+
+      <div class="field">
+        <label>Skills <span class="req">*</span> <span style="font-size:10px;color:var(--text-muted);text-transform:none;letter-spacing:0">(multi-select)</span></label>
+        <div class="multiselect-wrapper">
+          <div class="multiselect-box" id="skillsBox" tabindex="0">
+            <span class="multiselect-placeholder" id="skillsPlaceholder">— Select your skills —</span>
+          </div>
+          <div class="multiselect-arrow" id="skillsArrow">▼</div>
+          <div class="multiselect-dropdown" id="skillsDropdown">
+            <!-- options injected by JS -->
+          </div>
+        </div>
+        <div class="hint" id="skillsHint"></div>
+      </div>
+    </div>
+
+    <!-- Online Presence -->
+    <div class="section">
+      <div class="section-title"><span class="icon">🔗</span> Online Presence</div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="linkedin">LinkedIn Profile</label>
+          <input type="url" id="linkedin" placeholder="https://linkedin.com/in/username">
+          <div class="hint" id="linkedinHint"></div>
+        </div>
+
+        <div class="field">
+          <label for="portfolio">Portfolio Website</label>
+          <input type="url" id="portfolio" placeholder="https://yoursite.com">
+          <div class="hint" id="portfolioHint"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div class="section">
+      <div class="section-title"><span class="icon">✍️</span> About You</div>
+      <div class="field">
+        <label for="about">About Yourself <span class="req">*</span></label>
+        <textarea id="about" style="min-height:130px" placeholder="Tell us a little about yourself — your background, interests, goals…"></textarea>
+        <div class="hint" id="aboutHint"></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button type="button" class="btn btn-reset" id="resetBtn">↺ Reset Form</button>
+      <button type="submit" class="btn btn-submit"><span>Submit Profile →</span></button>
+    </div>
+
+  </form>
+</div>
+
+<div class="toast" id="toast">🎉 Profile submitted successfully!</div>
+
+<script>
+// ── Multi-select skills ──
+const SKILLS = ['JavaScript','TypeScript','Python','Java','C++','React','Vue','Angular',
+  'Node.js','Django','Flutter','Swift','Kotlin','SQL','MongoDB','GraphQL',
+  'Docker','Kubernetes','AWS','Figma','Photoshop','Machine Learning','Data Science'];
+
+let selectedSkills = [];
+const skillsBox = document.getElementById('skillsBox');
+const skillsDropdown = document.getElementById('skillsDropdown');
+const skillsArrow = document.getElementById('skillsArrow');
+const skillsPlaceholder = document.getElementById('skillsPlaceholder');
+
+SKILLS.forEach(skill => {
+  const opt = document.createElement('div');
+  opt.className = 'multiselect-option';
+  opt.dataset.value = skill;
+  opt.innerHTML = `<div class="check"></div>${skill}`;
+  opt.addEventListener('click', () => toggleSkill(skill, opt));
+  skillsDropdown.appendChild(opt);
+});
+
+function toggleSkill(skill, opt) {
+  if (selectedSkills.includes(skill)) {
+    selectedSkills = selectedSkills.filter(s => s !== skill);
+    opt.classList.remove('selected');
+    opt.querySelector('.check').textContent = '';
+  } else {
+    selectedSkills.push(skill);
+    opt.classList.add('selected');
+    opt.querySelector('.check').textContent = '✓';
+  }
+  renderTags();
+  validateSkills();
+}
+
+function renderTags() {
+  skillsBox.innerHTML = '';
+  if (selectedSkills.length === 0) {
+    skillsBox.appendChild(skillsPlaceholder);
+    skillsPlaceholder.style.display = '';
+  } else {
+    skillsPlaceholder.style.display = 'none';
+    selectedSkills.forEach(s => {
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.innerHTML = `${s}<span class="tag-remove" data-skill="${s}">✕</span>`;
+      skillsBox.appendChild(tag);
+    });
+  }
+  // re-attach remove handlers
+  skillsBox.querySelectorAll('.tag-remove').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const skill = btn.dataset.skill;
+      selectedSkills = selectedSkills.filter(s => s !== skill);
+      skillsDropdown.querySelectorAll('.multiselect-option').forEach(opt => {
+        if (opt.dataset.value === skill) {
+          opt.classList.remove('selected');
+          opt.querySelector('.check').textContent = '';
+        }
+      });
+      renderTags();
+      validateSkills();
+    });
+  });
+}
+
+skillsBox.addEventListener('click', () => {
+  const isOpen = skillsDropdown.classList.toggle('open');
+  skillsBox.classList.toggle('open', isOpen);
+  skillsArrow.classList.toggle('open', isOpen);
+});
+
+document.addEventListener('click', e => {
+  if (!skillsBox.closest('.multiselect-wrapper').contains(e.target)) {
+    skillsDropdown.classList.remove('open');
+    skillsBox.classList.remove('open');
+    skillsArrow.classList.remove('open');
+  }
+});
+
+// ── Photo upload ──
+document.getElementById('photoInput').addEventListener('change', function() {
+  const file = this.files[0];
+  const hint = document.getElementById('photoHint');
+  const preview = document.getElementById('avatarPreview');
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    setHint(hint, 'File exceeds 5MB limit', false);
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    preview.innerHTML = `<img src="${e.target.result}" alt="preview">`;
+    setHint(hint, '✓ Photo uploaded', true);
+  };
+  reader.readAsDataURL(file);
+});
+
+// ── Radio / Checkbox styling ──
+document.getElementById('genderGroup').querySelectorAll('input[type=radio]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    document.getElementById('genderGroup').querySelectorAll('.radio-option').forEach(el => el.classList.remove('selected'));
+    radio.closest('.radio-option').classList.add('selected');
+    validateGender();
+  });
+});
+
+document.getElementById('hobbiesGroup').querySelectorAll('input[type=checkbox]').forEach(cb => {
+  cb.addEventListener('change', () => {
+    cb.closest('.checkbox-option').classList.toggle('checked', cb.checked);
+    validateHobbies();
+  });
+});
+
+// ── Password strength ──
+document.getElementById('password').addEventListener('input', function() {
+  const v = this.value;
+  let score = 0;
+  if (v.length >= 8) score++;
+  if (/[A-Z]/.test(v)) score++;
+  if (/[0-9]/.test(v)) score++;
+  if (/[^A-Za-z0-9]/.test(v)) score++;
+  const colors = ['#ff5577','#ffb547','#ffb547','#3ddc97','#3ddc97'];
+  const labels = ['','Weak','Fair','Good','Strong'];
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById('s'+i).style.background = i <= score ? colors[score] : 'var(--border)';
+  }
+  const hint = document.getElementById('passwordHint');
+  if (!v) { setHint(hint,'',null); return; }
+  setHint(hint, score < 2 ? `Weak password — add uppercase, numbers or symbols` : score < 4 ? `${labels[score]} password` : '✓ Strong password', score >= 3);
+});
+
+// ── URL validation helper ──
+function isValidURL(url) {
+  try { const u = new URL(url); return u.protocol === 'http:' || u.protocol === 'https:'; }
+  catch { return false; }
+}
+
+// ── Hint helper ──
+function setHint(el, msg, ok) {
+  el.textContent = msg;
+  el.className = 'hint' + (ok === true ? ' success' : ok === false ? ' error' : '');
+}
+
+function markInput(el, ok) {
+  el.classList.toggle('valid', ok === true);
+  el.classList.toggle('invalid', ok === false);
+}
+
+// ── Validators ──
+function validateField(id, hintId, fn) {
+  const el = document.getElementById(id);
+  const hint = document.getElementById(hintId);
+  const [ok, msg] = fn(el.value.trim());
+  markInput(el, ok);
+  setHint(hint, msg, ok);
+  return ok;
+}
+
+const validators = {
+  fullName: v => v.length < 2 ? [false,'Name must be at least 2 characters'] : [true,'✓ Looks good'],
+  email: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ? [true,'✓ Valid email'] : [false,'Enter a valid email address'],
+  password: v => v.length >= 8 ? [true,''] : [false,'Password must be at least 8 characters'],
+  phone: v => /^[+\d\s\-()]{7,15}$/.test(v) ? [true,'✓ Valid number'] : [false,'Enter a valid phone number'],
+  dob: v => {
+    if (!v) return [false,'Date of birth is required'];
+    const d = new Date(v), now = new Date();
+    const age = (now - d) / (365.25*24*3600*1000);
+    return age < 5 ? [false,'Please enter a valid date'] : age > 120 ? [false,'Date seems too far back'] : [true,'✓ Valid date'];
+  },
+  address: v => v.length < 5 ? [false,'Please enter your full address'] : [true,'✓ Address noted'],
+  city: v => v.length < 2 ? [false,'Enter your city'] : [true,'✓'],
+  state: v => v.length < 2 ? [false,'Enter your state'] : [true,'✓'],
+  pincode: v => /^\d{4,10}$/.test(v) ? [true,'✓'] : [false,'Enter a valid pincode'],
+  country: v => v ? [true,'✓'] : [false,'Please select a country'],
+  linkedin: v => !v || isValidURL(v) ? [true, v ? '✓ Valid URL' : ''] : [false,'Enter a valid URL (https://...)'],
+  portfolio: v => !v || isValidURL(v) ? [true, v ? '✓ Valid URL' : ''] : [false,'Enter a valid URL (https://...)'],
+  about: v => v.length < 20 ? [false,`Too short — add ${20-v.length} more characters`] : [true,'✓ Looks great!'],
+};
+
+function validateGender() {
+  const ok = !!document.querySelector('input[name=gender]:checked');
+  setHint(document.getElementById('genderHint'), ok ? '✓ Selected' : 'Please select a gender', ok || null);
+  return ok;
+}
+
+function validateHobbies() {
+  const count = document.querySelectorAll('#hobbiesGroup input:checked').length;
+  const ok = count >= 2;
+  setHint(document.getElementById('hobbiesHint'), ok ? `✓ ${count} selected` : `Select at least 2 (${count} chosen)`, ok || (count > 0 ? false : null));
+  return ok;
+}
+
+function validateSkills() {
+  const ok = selectedSkills.length > 0;
+  skillsBox.classList.toggle('valid', ok);
+  skillsBox.classList.toggle('invalid', !ok);
+  setHint(document.getElementById('skillsHint'), ok ? `✓ ${selectedSkills.length} skill(s) selected` : 'Select at least one skill', ok || false);
+  return ok;
+}
+
+// Live validation
+Object.keys(validators).forEach(id => {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const events = el.tagName === 'SELECT' ? ['change'] : ['input','blur'];
+  events.forEach(evt => {
+    el.addEventListener(evt, () => validateField(id, id+'Hint', validators[id]));
+  });
+});
+
+// ── Submit ──
+document.getElementById('profileForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  let ok = true;
+  Object.keys(validators).forEach(id => {
+    if (!validateField(id, id+'Hint', validators[id])) ok = false;
+  });
+  if (!validateGender()) ok = false;
+  if (!validateHobbies()) ok = false;
+  if (!validateSkills()) ok = false;
+
+  if (!ok) {
+    const firstError = document.querySelector('.invalid, .hint.error');
+    if (firstError) firstError.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3500);
+});
+
+// ── Reset ──
+document.getElementById('resetBtn').addEventListener('click', () => {
+  document.getElementById('profileForm').reset();
+  // clear all hints
+  document.querySelectorAll('.hint').forEach(h => { h.textContent=''; h.className='hint'; });
+  document.querySelectorAll('input, textarea, select').forEach(el => { el.classList.remove('valid','invalid'); });
+  document.querySelectorAll('.radio-option').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.checkbox-option').forEach(el => el.classList.remove('checked'));
+  // reset avatar
+  document.getElementById('avatarPreview').innerHTML = '🧑';
+  // reset skills
+  selectedSkills = [];
+  skillsDropdown.querySelectorAll('.multiselect-option').forEach(opt => {
+    opt.classList.remove('selected');
+    opt.querySelector('.check').textContent = '';
+  });
+  skillsBox.innerHTML = '';
+  skillsBox.appendChild(skillsPlaceholder);
+  skillsPlaceholder.style.display = '';
+  skillsBox.classList.remove('valid','invalid','open');
+  // reset strength bar
+  for (let i = 1; i<=4; i++) document.getElementById('s'+i).style.background = 'var(--border)';
+});
+</script>
+</body>
+</html>

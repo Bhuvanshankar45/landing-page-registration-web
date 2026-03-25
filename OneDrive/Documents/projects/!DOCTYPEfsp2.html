@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  .error { color: red; }
+</style>
+</head>
+
+<body>
+
+<h1>Sign Up Form</h1>
+
+<form id="signupForm">
+
+<div class="field">
+<label>Name:</label><br>
+<input id="name" type="text" placeholder="Your name">
+<p id="nameError" class="error"></p>
+</div>
+
+<div class="field">
+<label>Email:</label><br>
+<input id="email" type="text" placeholder="name@example.com">
+<p id="emailError" class="error"></p>
+</div>
+
+<div class="field">
+<label>Phone Number:</label><br>
+<input id="phone" type="text" placeholder="10 digit number">
+<p id="phoneError" class="error"></p>
+</div>
+
+<div class="field">
+<label>Password:</label><br>
+<input id="password" type="password" placeholder="Min 8 characters">
+<p id="passwordError" class="error"></p>
+</div>
+
+<div class="field">
+<label>Confirm Password:</label><br>
+<input id="confirm" type="password" placeholder="Repeat password">
+<p id="confirmError" class="error"></p>
+</div>
+
+<p><button type="submit">Sign Up</button></p>
+
+</form>
+
+<p id="result"></p>
+
+<script>
+document.getElementById("signupForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  let name = document.getElementById("name").value;
+  let email = document.getElementById("email").value;
+  let phone = document.getElementById("phone").value;
+  let password = document.getElementById("password").value;
+  let confirm = document.getElementById("confirm").value;
+
+  let valid = true;
+
+  // Clear errors
+  document.getElementById("nameError").innerText = "";
+  document.getElementById("emailError").innerText = "";
+  document.getElementById("phoneError").innerText = "";
+  document.getElementById("passwordError").innerText = "";
+  document.getElementById("confirmError").innerText = "";
+
+  // Name validation (only letters)
+  let nameRegex = /^[A-Za-z ]+$/;
+  if (!nameRegex.test(name)) {
+    document.getElementById("nameError").innerText = "Name should contain only letters";
+    valid = false;
+  }
+
+  // Email validation
+  let emailRegex = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+  if (!emailRegex.test(email)) {
+    document.getElementById("emailError").innerText = "Enter valid email address";
+    valid = false;
+  }
+
+  // Phone validation (10 digits)
+  let phoneRegex = /^[0-9]{10}$/;
+  if (!phoneRegex.test(phone)) {
+    document.getElementById("phoneError").innerText = "Enter valid 10 digit phone number";
+    valid = false;
+  }
+
+  // Password validation
+  if (password.length < 8) {
+    document.getElementById("passwordError").innerText = "Password must be at least 8 characters";
+    valid = false;
+  }
+
+  // Confirm password check
+  if (password !== confirm) {
+    document.getElementById("confirmError").innerText = "Passwords do not match";
+    valid = false;
+  }
+
+  // Final result
+  if (valid) {
+    document.getElementById("result").innerText = "Signup Successful!";
+  }
+});
+</script>
+
+</body>
+</html>
